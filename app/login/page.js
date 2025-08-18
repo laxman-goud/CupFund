@@ -12,7 +12,7 @@ const Login = () => {
         }
     }, [session, router])
     return (
-        <div className="text-white py-14 container mx-auto">
+        <div className="text-white py-14 container mx-auto h-[84vh]">
             <h1 className='text-center font-bold text-3xl'>Login/Signup to get your fans support</h1>
 
             <div className="login-social-icons flex flex-col gap-2 p-10 items-center">
