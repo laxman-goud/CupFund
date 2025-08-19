@@ -10,7 +10,7 @@ const NavBar = () => {
     return (
         <nav className="bg-gray-900 text-white flex justify-between items-center p-4">
             <div className="logo font-bold text-lg flex items-center">
-                <img src="/tea.gif" alt="tea" width={44} />
+                <img src="/tea.gif" alt="tea" width={44} className="invert-25" />
                 <span>Get Me A Chai</span>
             </div>
             {/* <ul className="flex gap-6">
@@ -38,13 +38,10 @@ const NavBar = () => {
                                         <Link href="/dashboard" className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Dashboard</Link>
                                     </li>
                                     <li>
-                                        <Link href="#" className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Settings</Link>
+                                        <Link href="#" className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Your page</Link>
                                     </li>
                                     <li>
-                                        <Link href="#" className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Earnings</Link>
-                                    </li>
-                                    <li>
-                                        <Link href="#" className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Sign out</Link>
+                                        <Link href="" className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white" onClick={() => { signOut({ callbackUrl: "/" }   ) }}>Sign out</Link>
                                     </li>
                                 </ul>
                             </div>
