@@ -11,5 +11,4 @@ const paymentSchema = new mongoose.Schema({
     status: { type: String, enum: ["pending", "completed", "failed"], default: "pending" },
 });
 
-const Payment = mongoose.model("Payment", paymentSchema);
-export default Payment;
+export default mongoose.models.User || mongoose.model("Payments", paymentSchema);
