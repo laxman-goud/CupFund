@@ -29,6 +29,6 @@ export const initiate = async (amount, to_username, paymentForm) => {
         message: paymentForm.message
     });
 
-    return order;
+    return order  ;
     
 };

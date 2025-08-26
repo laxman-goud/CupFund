@@ -4,39 +4,54 @@ import React from 'react'
 import Script from 'next/script'
 import { useSession } from "next-auth/react"
 import { useParams } from "next/navigation"
+import { initiate } from '@/actions/userActions'
+import { useState } from 'react'
+
+/* global Razorpay */
 
 const PaymentPage = () => {
+    const { data: session } = useSession()
     const params = useParams()
-    const pay = (amount, orderId) => {
-        var options = {
-            "key": process.env.RAZOR_PAY_ID, // Enter the Key ID generated from the Dashboard
-            "amount": amount, // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
-            "currency": "INR",
-            "name": "Get Me A Chai",
-            "description": "Test Transaction",
-            "image": "https://example.com/your_logo",
-            "order_id": orderId, //This is a sample Order ID. Pass the `id` obtained in the response of Step 1
-            "callback_url": `${process.env.URL}/api/razorpay`,
-            "prefill": {
-                "name": "Laxman Goud",
-                "email": "laxman@test.com",
-                "contact": "9212345678"
-            },
-            "notes": {
-                "address": "Razorpay Corporate Office"
-            },
-            "theme": {
-                "color": "#3399cc"
-            }
-        };
-        var rzp1 = new Razorpay(options);
-        rzp1.open();
-        // e.preventDefault();
+
+    const [paymentForm, setpaymentForm] = useState({ name: "", message: "", amount: "" })
+    const handleChange = (e) => {
+        setpaymentForm({...paymentForm, [e.target.name]: e.target.value})
     }
+
+    const pay = async (amount) => {
+        try {
+            // Call backend to create Razorpay order
+            const order = await initiate(amount, session?.user?.name || params.username)
+
+            const options = {
+                key: process.env.NEXT_PUBLIC_RAZORPAY_ID,
+                amount: order.amount,
+                currency: "INR",
+                name: "Get Me A Chai",
+                description: "Support the creator",
+                image: "/logo.png",
+                order_id: order.id,
+                callback_url: `${process.env.NEXT_PUBLIC_URL}/api/razorpay`,
+                prefill: {
+                    name: session?.user?.name || "Guest",
+                    email: session?.user?.email || "guest@example.com",
+                    contact: "9999999999"
+                },
+                theme: {
+                    color: "#3399cc"
+                }
+            }
+
+            const rzp1 = new Razorpay(options)
+            rzp1.open()
+        } catch (err) {
+            console.error("Payment error:", err)
+        }
+    }
+
     return (
         <>
-            <Script src="https://checkout.razorpay.com/v1/checkout.js"></Script>
-            {/* <button id="rzp-button1" style={{ margin: "20px", padding: "10px 20px" }}>Pay Now</button> */}
+            <Script src="https://checkout.razorpay.com/v1/checkout.js" />
 
             <div className="username-page mb-10">
                 <div className="cover-img relative">
@@ -46,56 +61,19 @@ const PaymentPage = () => {
                 <div className="info flex flex-col items-center">
                     <h1 className="username text-center mt-24 font-bold text-2xl">@{params.username}</h1>
                     <p className="about text-slate-400">helping small business by digital experiences</p>
-                    <p className="details text-slate-400">120 posts, 345 members, 450 releases</p>
                 </div>
                 <div className="payment w-[90%] mx-auto flex justify-center items-center mt-10 gap-2.5">
-                    <div className="supporters w-1/2 max-w-[700px] h-[450px] bg-slate-900">
-                        <h2 className="font-bold p-4 text-2xl">Supporters</h2>
-                        <ul className='donators-list flex flex-col justify-center gap-2.5 pl-8'>
-                            <li className='flex items-center gap-2.5'>
-                                <img src="/avatar.gif" alt="avatar" width={40} />
-                                <p className='text-md'>
-                                    Raju donated <span className="donated-amount font-bold">$36</span> with message &quot; I support you bro. Lots of love  &ldquo;
-                                </p>
-                            </li>
-                            <li className='flex items-center gap-2.5'>
-                                <img src="/avatar.gif" alt="avatar" width={40} />
-                                <p className='text-md'>
-                                    Raju donated <span className="donated-amount font-bold">$36</span> with message &quot; I support you bro. Lots of love  &ldquo;
-                                </p>
-                            </li>
-                            <li className='flex items-center gap-2.5'>
-                                <img src="/avatar.gif" alt="avatar" width={40} />
-                                <p className='text-md'>
-                                    Raju donated <span className="donated-amount font-bold">$36</span> with message &quot; I support you bro. Lots of love  &ldquo;
-                                </p>
-                            </li>
-                            <li className='flex items-center gap-2.5'>
-                                <img src="/avatar.gif" alt="avatar" width={40} />
-                                <p className='text-md'>
-                                    Raju donated <span className="donated-amount font-bold">$36</span> with message &quot; I support you bro. Lots of love  &ldquo;
-                                </p>
-                            </li>
-                            <li className='flex items-center gap-2.5'>
-                                <img src="/avatar.gif" alt="avatar" width={40} />
-                                <p className='text-md'>
-                                    Raju donated <span className="donated-amount font-bold">$36</span> with message &quot; I support you bro. Lots of love  &ldquo;
-                                </p>
-                            </li>
-                        </ul>
-                    </div>
                     <div className="make-payment w-1/2 max-w-[700px] h-[450px] bg-slate-900">
                         <h2 className="font-bold p-4 text-2xl">Make Payment</h2>
                         <form className='flex flex-col gap-2.5 p-4'>
-                            <input type="text" placeholder='Your Name' className='p-2 rounded-md bg-slate-800 text-white' />
-                            <textarea placeholder='Message to creator' className='p-2 rounded-md bg-slate-800 text-white' rows={3}></textarea>
-                            {/* or choose from this amounts */}
-                            <input type="text" placeholder='Enter Amount' className='p-2 rounded-md bg-slate-800 text-white' />
+                            <input type="text" placeholder='Your Name' className='p-2 rounded-md bg-slate-800 text-white' onChange={handleChange} value={paymentForm.name} />
+                            <textarea placeholder='Message to creator' className='p-2 rounded-md bg-slate-800 text-white' rows={3} onChange={handleChange} value={paymentForm.message} ></textarea>
+                            <input type="text" placeholder='Enter Amount' className='p-2 rounded-md bg-slate-800 text-white' onChange={handleChange} value={paymentForm.amount} />
                             <div className='flex gap-2.5'>
-                                <button type='button' className='bg-slate-600 text-white p-2 rounded-md w-18'>₹10</button>
-                                <button type='button' className='bg-slate-600 text-white p-2 rounded-md w-18'>₹20</button>
-                                <button type='button' className='bg-slate-600 text-white p-2 rounded-md w-18'>₹50</button>
-                                <button type='button' className='bg-slate-600 text-white p-2 rounded-md w-18'>₹100</button>
+                                <button type='button' onClick={() => pay(10)} className='bg-slate-600 text-white p-2 rounded-md'>₹10</button>
+                                <button type='button' onClick={() => pay(20)} className='bg-slate-600 text-white p-2 rounded-md'>₹20</button>
+                                <button type='button' onClick={() => pay(50)} className='bg-slate-600 text-white p-2 rounded-md'>₹50</button>
+                                <button type='button' onClick={() => pay(100)} className='bg-slate-600 text-white p-2 rounded-md'>₹100</button>
                             </div>
                             <button type="button" className="text-white bg-gradient-to-r from-cyan-500 to-blue-500 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-cyan-300 dark:focus:ring-cyan-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2">Pay</button>
                         </form>
