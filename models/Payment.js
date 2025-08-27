@@ -1,3 +1,4 @@
+// models/Payment.js
 import mongoose from "mongoose";
 
 const paymentSchema = new mongoose.Schema({
@@ -6,9 +7,9 @@ const paymentSchema = new mongoose.Schema({
     order_id: { type: String, required: true, unique: true },
     message: { type: String, default: "" },
     amount: { type: Number, required: true },
+    status: { type: String, enum: ["pending", "completed", "failed"], default: "pending" },
     createdAt: { type: Date, default: Date.now },
     updatedAt: { type: Date, default: Date.now },
-    status: { type: String, enum: ["pending", "completed", "failed"], default: "pending" },
 });
 
-export default mongoose.models.User || mongoose.model("Payments", paymentSchema);
+export default mongoose.models.Payment || mongoose.model("Payment", paymentSchema);

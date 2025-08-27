@@ -9,7 +9,7 @@ export const initiate = async (amount, to_username, paymentForm) => {
     await connectDB();
 
     var instance = new Razorpay({
-        key_id: process.env.RAZOR_PAY_ID,
+        key_id: process.env.NEXT_PUBLIC_RAZOR_PAY_ID,
         key_secret: process.env.RAZOR_PAY_SECRET,
     });
 
