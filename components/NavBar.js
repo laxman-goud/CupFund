@@ -13,20 +13,12 @@ const NavBar = () => {
                 <img src="/tea.gif" alt="tea" width={44} className="invert-25" />
                 <span>Get Me A Chai</span>
             </div>
-            {/* <ul className="flex gap-6">
-                <li>Home</li>
-                <li>About</li>
-                <li>Projects</li>
-                <li>Sign Up</li>
-                <li>Login</li>
-            </ul> */}
             <div className="flex gap-1">
-
                 {session ?
                     <>
                         <div className="nav-dropdown relative">
                             <button id="dropdownDefaultButton" data-dropdown-toggle="dropdown" className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-1 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800" type="button" onClick={() => { setDropDown(!dropDown) }} >
-                                Welcome {session.user.email}
+                                Welcome {session.user.username}
                                 <svg className="w-2.5 h-2.5 ms-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
                                     <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m1 1 4 4 4-4" />
                                 </svg>
@@ -38,15 +30,14 @@ const NavBar = () => {
                                         <Link href="/dashboard" className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Dashboard</Link>
                                     </li>
                                     <li>
-                                        <Link href={`/${session.user.name}`} className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Your page</Link>
+                                        <Link href={`/${session.user.username}`} className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Your page</Link>
                                     </li>
                                     <li>
-                                        <Link href="" className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white" onClick={() => { signOut({ callbackUrl: "/" }   ) }}>Sign out</Link>
+                                        <Link href="" className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white" onClick={() => { signOut({ callbackUrl: "/" }) }}>Sign out</Link>
                                     </li>
                                 </ul>
                             </div>
                         </div>
-                        <button type="button" className="text-white bg-gradient-to-br from-purple-600 to-blue-500 hover:bg-gradient-to-bl focus:ring-1 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2 cursor-pointer" onClick={() => { signOut({ callbackUrl: "/" }   ) }}>Logout</button>
                     </>
                     :
                     <Link href={"/login"}>

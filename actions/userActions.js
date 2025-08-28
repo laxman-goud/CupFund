@@ -5,30 +5,39 @@ import Payment from "@/models/Payment";
 import User from "@/models/User";
 import { connectDB } from "@/app/lib/mongoose";
 
-export const initiate = async (amount, to_username, paymentForm) => {
-    await connectDB();
+// ... (imports)
 
-    var instance = new Razorpay({
-        key_id: process.env.NEXT_PUBLIC_RAZOR_PAY_ID,
-        key_secret: process.env.RAZOR_PAY_SECRET,
-    });
+export async function POST(request) {
+    try {
+        const { amount, to_username, paymentForm } = await request.json();
+        await connectDB();
 
-    let options = {
-        amount: Number.parseInt(amount), // amount in the smallest currency unit
-        currency: "INR",
-    };
+        const toUser = await User.findOne({ username: to_username });
+        if (!toUser) return NextResponse.json({ error: "User not found" }, { status: 404 });
 
-    let order = await instance.orders.create(options);
+        const instance = new Razorpay({
+            key_id: process.env.NEXT_PUBLIC_RAZOR_PAY_ID,
+            key_secret: process.env.RAZOR_PAY_SECRET,
+        });
 
-    // create a payment object shows pending payment in db
-    await Payment.create({
-        oid: order.id,
-        amount: amount,
-        to_username: to_username,
-        name: paymentForm.name,
-        message: paymentForm.message
-    });
+        const order = await instance.orders.create({
+            amount: amount * 100, // amount is in paise 
+            currency: "INR",
+            receipt: `rcpt_${Date.now()}`,
+        });
 
-    return order  ;
-    
-};
+        await Payment.create({
+            order_id: order.id,
+            to_user: toUser._id,
+            name: paymentForm.name || "Anonymous",
+            message: paymentForm.message || "",
+            amount: amount * 100, 
+            status: "pending",
+        });
+
+        return NextResponse.json(order);
+    } catch (err) {
+        console.error(err);
+        return NextResponse.json({ error: err.message }, { status: 500 });
+    }
+}
