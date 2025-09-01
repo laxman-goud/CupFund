@@ -1,14 +1,33 @@
 import mongoose from "mongoose";
+const { Schema, model } = mongoose;
 
-const userSchema = new mongoose.Schema({
-    name: { type: String },
-    email: { type: String, unique: true },
-    username: { type: String, unique: true },
-    profilePic: { type: String, default: "" },
-    coverPic: { type: String, default: "" },
-    razorpayId: { type: String, unique: true },
-    createdAt: { type: Date, default: Date.now },
-    updatedAt: { type: Date, default: Date.now },
-});
+const UserSchema = new Schema({
+    name: {
+        type: String,
+    },
+    email: {
+        type: String,
+        unique: true,
+        required: true
+    },
+    username: {
+        type: String,
+        unique: true,
+        required: true
+    },
+    profilpicture: {
+        type: String,
+    },
+    coverpicture: {
+        type: String,
+    },
+    razorpayid: {
+        type: String,
+    },
+    razorpaySecret: {
+        type: String,
+    }
 
-export default mongoose.models.User || mongoose.model("User", userSchema);
+}, { timestamps: true });
+
+export default mongoose.models.User || model("User", UserSchema);

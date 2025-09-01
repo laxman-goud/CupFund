@@ -1,125 +1,254 @@
-"use client"
+/* eslint-disable @next/next/no-img-element */
+"use client";
+import React, { useEffect, useState } from "react";
+import Script from "next/script";
+import { initiate, fetchUser, fetchPayments } from "@/action/useractions";
+import { useSession } from "next-auth/react";
+import Loader from "./Loader";
+import CoverpicSkeleteon from "./CoverpicSkeleteon";
+import { ToastContainer, toast, Bounce } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 
-import React, { useState } from 'react'
-import Script from 'next/script'
-import { useSession } from "next-auth/react"
-import { useParams } from "next/navigation"
+const PaymentPage = ({ username }) => {
+  const { data: session } = useSession();
+  const [paymentform, setPaymentform] = useState({ name: "", message: "", amount: "" });
+  const [currentUser, setCurrentUser] = useState({});
+  const [payment, setPayment] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const searchParams = useSearchParams();
+  const router = useRouter();
 
-/* global Razorpay */
+  useEffect(() => {
+    getData();
+  }, []);
 
-const PaymentPage = ({ profile }) => {
-    const { data: session } = useSession()
-    const params = useParams()
-
-    const [paymentForm, setpaymentForm] = useState({ name: "", message: "", amount: "" })
-    const handleChange = (e) => {
-        setpaymentForm({ ...paymentForm, [e.target.name]: e.target.value })
+  useEffect(() => {
+    if (searchParams.get("paymentdone") === "true") {
+      toast("Payment Has Been made", {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "dark",
+        transition: Bounce,
+      });
+      router.push(`/${username}`);
     }
+  }, [searchParams, router, username]);
 
-    const pay = async (amount) => {
-        try {
-            const res = await fetch("/api/create-order", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    amount,
-                    to_username: params.username,
-                    paymentForm,
-                }),
-            });
-            const order = await res.json();
-            if (order.error) throw new Error(order.error);
+  const handelChange = (e) => {
+    setPaymentform({ ...paymentform, [e.target.name]: e.target.value });
+  };
 
-            const options = {
-                key: process.env.NEXT_PUBLIC_RAZOR_PAY_ID,
-                amount: order.amount,
-                currency: "INR",
-                name: "Get Me A Chai",
-                description: "Support the creator",
-                order_id: order.id,
-                callback_url: `${process.env.NEXT_PUBLIC_URL}/api/razorpay`,
-                prefill: {
-                    name: session?.user?.name || paymentForm.name,
-                    email: session?.user?.email || "guest@example.com",
-                    contact: "9999999999",
-                },
-                theme: { color: "#3399cc" },
-            };
-            const rzp1 = new Razorpay(options);
-            rzp1.open();
-        } catch (err) {
-            console.error("Payment error:", err);
-            alert("Payment failed. Please try again.")
-        }
+  const getData = async () => {
+    setLoading(true);
+    let u = await fetchUser(username);
+    setCurrentUser(JSON.parse(u));
+    let paymentAmount = await fetchPayments(username);
+    setPayment(JSON.parse(paymentAmount));
+    setLoading(false);
+  };
+
+  const pay = async (amount) => {
+    // get the order id
+    let a = await initiate(amount, username, paymentform);
+    let orderId = a.id;
+    var options = {
+      key: process.env.NEXT_PUBLIC_RAZOR_PAY_ID, // Enter the Key ID generated from the Dashboard
+      amount: amount, // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
+      currency: "INR",
+      name: "Get Me A Chai", //your business name
+      description: "Test Transaction",
+      image: "./tea.gif",
+      order_id: orderId, //This is a sample Order ID. Pass the `id` obtained in the response of Step 1
+      callback_url: `${process.env.NEXT_PUBLIC_URL}/api/razorpay`,
+      prefill: {
+        //We recommend using the prefill parameter to auto-fill customer's contact information especially their phone number
+        name: username, //your customer's name
+        email: session?.user.email,
+        contact: "9999999999", //your customer's phone number
+      },
+      notes: {
+        address: "Razorpay Corporate Office",
+      },
+      theme: {
+        color: "#3399cc",
+      },
     };
+    var rzp1 = new Razorpay(options);
+    rzp1.open();
+  };
 
-    return (
+  return (
+    <>
+      <Script src="https://checkout.razorpay.com/v1/checkout.js"></Script>
+
+      <ToastContainer
+        position="top-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="dark"
+        transition={Bounce}
+      />
+      {loading && <Loader />}
+      {currentUser.error && (
+        <div className="text-center text-4xl my-20 font-extrabold">
+          User {username} not found ☹
+        </div>
+      )}
+      {!currentUser.error && (
         <>
-            <Script src="https://checkout.razorpay.com/v1/checkout.js" />
+          <div className="bg-cover relative w-full">
+            {currentUser.coverpicture ? (
+              <img
+                className="object-cover h-40 md:md:h-[21rem] w-full"
+                src={currentUser.coverpicture}
+                alt="coverImage"
+                onError={(e) => (e.target.src = "https://placehold.co/1920x400/00091d/ffffff?text=Cover+Image")}
+              />
+            ) : (
+              <CoverpicSkeleteon />
+            )}
 
-            <div className="username-page mb-10">
-                <div className="cover-img relative">
-                    <img src={profile.coverPic || "https://placehold.co/1920x400/00091d/ffffff?text=Cover+Image"} alt="Dashboard Cover" className="w-full h-[400px] object-cover" />
-                    <img src={profile.profilePic || "/avatar.gif"} alt="profile image" className='w-[150px] h-[150px] absolute left-[46%] -bottom-[90px] border-2 border-white rounded-full' />
-                </div>
-                <div className="info flex flex-col items-center">
-                    <h1 className="username text-center mt-24 font-bold text-2xl">@{profile.username}</h1>
-                    <p className="about text-slate-400">{profile.name}</p>
-                </div>
-                <div className="payment w-[90%] mx-auto flex justify-center items-center mt-10 gap-2.5">
-                    <div className="make-payment w-full md:w-1/2 max-w-[700px] bg-slate-900 rounded-xl shadow-lg">
-                        <h2 className="font-bold p-4 text-2xl">Make a Payment</h2>
-                        <form className='flex flex-col gap-2.5 p-4'>
-                            <input
-                                name="name"
-                                type="text"
-                                placeholder="Your Name"
-                                className="p-2 rounded-md bg-slate-800 text-white border border-slate-700 focus:outline-none focus:border-slate-500"
-                                onChange={handleChange}
-                                value={paymentForm.name}
-                            />
-                            <textarea
-                                name="message"
-                                placeholder="Message to creator"
-                                className="p-2 rounded-md bg-slate-800 text-white border border-slate-700 focus:outline-none focus:border-slate-500"
-                                rows={3}
-                                onChange={handleChange}
-                                value={paymentForm.message}
-                            />
-                            <input
-                                name="amount"
-                                type="number"
-                                placeholder="Enter Amount"
-                                className="p-2 rounded-md bg-slate-800 text-white border border-slate-700 focus:outline-none focus:border-slate-500"
-                                onChange={handleChange}
-                                value={paymentForm.amount}
-                            />
-                            <div className='flex gap-2.5'>
-                                <button type='button' onClick={() => pay(10)} className='bg-slate-600 text-white p-2 rounded-md hover:bg-slate-500 transition-colors duration-200'>₹10</button>
-                                <button type='button' onClick={() => pay(20)} className='bg-slate-600 text-white p-2 rounded-md hover:bg-slate-500 transition-colors duration-200'>₹20</button>
-                                <button type='button' onClick={() => pay(50)} className='bg-slate-600 text-white p-2 rounded-md hover:bg-slate-500 transition-colors duration-200'>₹50</button>
-                                <button type='button' onClick={() => pay(100)} className='bg-slate-600 text-white p-2 rounded-md hover:bg-slate-500 transition-colors duration-200'>₹100</button>
-                            </div>
-                            <button
-                                type="button"
-                                onClick={() => {
-                                    if (!paymentForm.amount || Number(paymentForm.amount) <= 0) {
-                                        // Using a custom alert for better UI
-                                        alert("Please enter a valid amount");
-                                        return;
-                                    }
-                                    pay(Number(paymentForm.amount));
-                                }}
-                                className="text-white bg-gradient-to-r from-cyan-500 to-blue-500 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-cyan-300 dark:focus:ring-cyan-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2"
-                            >
-                                Pay
-                            </button>
-                        </form>
-                    </div>
-                </div>
+            <div className=" size-20 md:size-32 object-center absolute mx-auto right-0 left-0 -bottom-12 md:-bottom-16 border-2 overflow-hidden border-white rounded-full bg-black">
+              <img
+                className="object-cover size-20 md:size-32 "
+                src={
+                  currentUser.profilpicture
+                    ? currentUser.profilpicture
+                    : "./avatar.gif"
+                }
+                alt="avatarImage"
+                onError={(e) => (e.target.src = "./avatar.gif")}
+              />
             </div>
-        </>
-    )
-}
+          </div>
+          <div className="info flex items-center justify-center py-20 flex-col gap-2 ">
+            <div className="font-bold text-lg">@{username}</div>
+            <div className="text-slate-300">
+              let&apos;s Help {username} to get a cup of tea
+            </div>
+            <div className="text-slate-400">
+              {payment.length} supporters . ₹{payment.reduce((a, b) => a + (b.amount / 100), 0)} raised
+            </div>
 
-export default PaymentPage
+            <div className="payment flex flex-col-reverse md:flex-row gap-3 container mt-12 px-5 md:px-0 ">
+              <div className="supporters w-full bg-slate-800/40 rounded-lg backdrop-blur-sm h-[28rem] p-5 md:p-10 overflow-auto">
+                <h2 className="text-xl font-bold mb-5">Supporters</h2>
+
+                {payment.length === 0 && (
+                  <div className="text-center font-extrabold text-lg">
+                    No supporters yet ☹
+                  </div>
+                )}
+                <ul className="mx-2.5 md:mx-5 text-md">
+                  {payment.map((p) => (
+                    <li key={p._id} className="my-4 flex gap-2 items-center">
+                      <img src="./avatar.gif" alt="user avatar" width={28} />
+                      <span className="text-sm md:text-base">
+                        {p.name} donated{" "}
+                        <span className="font-semibold">₹{p.amount / 100}</span> with
+                        a message &quot;{p.message}&quot;
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              <div className="makePayment w-full bg-slate-800/40 rounded-lg backdrop-blur-sm p-10">
+                <h2 className="text-xl font-bold mb-5">Make a payment</h2>
+                <form className="flex flex-col gap-3">
+                  <input
+                    type="text"
+                    placeholder="Name"
+                    className="p-2 rounded-md bg-slate-800/40"
+                    onChange={handelChange}
+                    value={paymentform.name}
+                    name="name"
+                    required
+                  />
+                  <input
+                    type="text"
+                    placeholder="Message"
+                    className="p-2 rounded-md bg-slate-800/40"
+                    onChange={handelChange}
+                    value={paymentform.message}
+                    name="message"
+                    required
+                  />
+                  <input
+                    type="number"
+                    inputMode="numeric"
+                    pattern="[0-9]*"
+                    placeholder="Amount"
+                    className="p-2 rounded-md bg-slate-800/40"
+                    onChange={handelChange}
+                    value={paymentform.amount}
+                    name="amount"
+                  />
+                  <button
+                    type="button"
+                    className=" text-white bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 shadow-lg shadow-blue-500/50 dark:shadow-md dark:shadow-blue-800/80 font-medium rounded-lg text-sm px-5 py-2.5 text-center mb-2 disabled:from-gray-500 disabled:shadow-gray-800/80 disabled:hover:bg-gradient-to-r"
+                    disabled={
+                      paymentform.name?.length < 3 ||
+                      paymentform.message?.length < 5 ||
+                      paymentform.amount?.length < 1
+                    }
+                    onClick={() => pay(paymentform.amount * 100)}
+                  >
+                    Support
+                  </button>
+                </form>
+                <div className="flex gap-3 mt-5">
+                  <button
+                    className="p-2 bg-slate-600/40 rounded-md hover:bg-slate-700/90 disabled:bg-slate-800/40"
+                    onClick={() => pay(10 * 100)}
+                    disabled={
+                      paymentform.name?.length < 3 ||
+                      paymentform.message?.length < 5
+                    }
+                  >
+                    Pay ₹10
+                  </button>
+                  <button
+                    className="p-2 bg-slate-600/40 rounded-md hover:bg-slate-700/90 disabled:bg-slate-800/40"
+                    onClick={() => pay(20 * 100)}
+                    disabled={
+                      paymentform.name?.length < 3 ||
+                      paymentform.message?.length < 5
+                    }
+                  >
+                    Pay ₹20
+                  </button>
+                  <button
+                    className="p-2 bg-slate-600/40 rounded-md hover:bg-slate-700/90 disabled:bg-slate-800/40"
+                    onClick={() => pay(30 * 100)}
+                    disabled={
+                      paymentform.name?.length < 3 ||
+                      paymentform.message?.length < 5
+                    }
+                  >
+                    Pay ₹50
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </>
+      )}
+    </>
+  );
+};
+
+export default PaymentPage;

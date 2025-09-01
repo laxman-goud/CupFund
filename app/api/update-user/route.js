@@ -11,13 +11,13 @@ export async function POST(request) {
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
         }
 
-        const { name, username, profilePic, coverPic } = await request.json();
+        const { name, username, profilePic, coverPic, razorpayId, razorpaySecret } = await request.json();
         const email = session.user.email;
 
         const updatedUser = await User.findOneAndUpdate(
             { email },
-            { name, username, profilePic, coverPic },
-            { new: true } // Return the updated document
+            { name, username, profilePic, coverPic, razorpayId, razorpaySecret },
+            { new: true }
         );
 
         if (!updatedUser) {

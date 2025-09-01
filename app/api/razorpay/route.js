@@ -1,32 +1,41 @@
 import { NextResponse } from "next/server";
-import crypto from "crypto";
-import { connectDB } from "@/app/lib/mongoose";
-import Payment from "@/models/Payment";
+import { validatePaymentVerification } from "razorpay/dist/utils/razorpay-utils";
+import Payment from "@/models/Payment.model";
+import connectDB from "@/db/connectDb";
+import User from "@/models/User";
+import Razorpay from "razorpay";
 
-export async function POST(request) {
-    try {
-        const body = await request.formData();
-        const razorpay_order_id = body.get("razorpay_order_id");
-        const razorpay_payment_id = body.get("razorpay_payment_id");
-        const razorpay_signature = body.get("razorpay_signature");
+export const POST = async(req) => {
+    await connectDB()
+    let body = await req.formData()
+    body = Object.fromEntries(body)
 
-        const shasum = crypto.createHmac("sha256", process.env.RAZOR_PAY_SECRET);
-        shasum.update(razorpay_order_id + "|" + razorpay_payment_id);
-        const digest = shasum.digest("hex");
+    // check if razorpay id is present on server
+    let p = await Payment.findOne({oid: body.razorpay_order_id})
+    if(!p){
+        return NextResponse.json({success: false, message: "OrderId Not found"})
+    }
 
-        if (digest !== razorpay_signature) {
-            return NextResponse.json({ error: "Invalid signature" }, { status: 400 });
-        }
+    // fetch the user to get razorpay Secret
+    let user = await User.findOne({username: p.to_user})
+    if(!user){
+        return NextResponse.json({success: false, message: "User not found"})
+    }
+    const secret = user.razorpaySecret
 
-        await connectDB();
-        await Payment.findOneAndUpdate(
-            { order_id: razorpay_order_id },
-            { status: "completed" }
-        );
 
-        return NextResponse.json({ status: "ok" });
-    } catch (err) {
-        console.error(err);
-        return NextResponse.json({ error: err.message }, { status: 500 });
+    // verify the payment 
+    let paymentVerify = validatePaymentVerification({"order_id" : body.razorpay_order_id , "payment_id" : body.razorpay_payment_id}, body.razorpay_signature, secret)
+
+    if(paymentVerify){
+        // update the payment in the database
+        const updatedPayment = await Payment.findOneAndUpdate({oid: body.razorpay_order_id}, {done : true} , {new: true})
+       // Construct the absolute URL for redirection
+       const redirectUrl = new URL(`/${updatedPayment.to_user}?paymentdone=true`, process.env.NEXT_PUBLIC_URL).toString();
+       console.log("redirect " , redirectUrl)
+       return NextResponse.redirect(redirectUrl);
+    }
+    else{
+        return NextResponse.json({success: false, message: "Payment verification failed"})
     }
 }
