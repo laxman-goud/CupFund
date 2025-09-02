@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import User from "@/models/User"; // Add missing User import
 
 let isConnected = false;
 
@@ -15,10 +16,6 @@ export const connectDB = async () => {
         console.log("✅ MongoDB connected");
     } catch (error) {
         console.error("❌ MongoDB connection error:", error);
+        process.exit(1);
     }
-};
-
-export const findUserByUsername = async (username) => {
-    await connectDB();
-    return User.findOne({ username });
 };

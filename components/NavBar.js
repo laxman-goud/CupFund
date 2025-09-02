@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import { useSession, signOut } from "next-auth/react";
 import Link from "next/link";
 import Search from "./Search";
-import Image from "next/image"; // Added missing Image import
+import Image from "next/image";
 
 const Navbar = () => {
   const { data: session } = useSession();
@@ -71,24 +71,31 @@ const Navbar = () => {
                 >
                   <li>
                     <Link
-                      href="/dashboard"
+                      href="/profile"
                       className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
+                      onClick={() => setShowDropDown(false)}
                     >
                       Dashboard
                     </Link>
                   </li>
                   <li>
-                    <Link
-                      href={`/${session.user.username}`}
-                      className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
-                    >
-                      Your Page
-                    </Link>
+                    {session.user.username && (
+                      <Link
+                        href={`/${session.user.username}`}
+                        className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
+                        onClick={() => setShowDropDown(false)}
+                      >
+                        Your Page
+                      </Link>
+                    )}
                   </li>
                   <li>
                     <Link
                       href="#"
-                      onClick={() => signOut()}
+                      onClick={() => {
+                        signOut();
+                        setShowDropDown(false);
+                      }}
                       className="block px-4 py-2 border-t border-gray-400 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
                     >
                       Sign out
