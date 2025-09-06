@@ -13,7 +13,7 @@ const HomePage = () => {
           <img
             src="/tea.gif"
             alt="Chai cup"
-            className="w-[62px] md:w-[70px] mb-[-7px]"
+            className="w-[62px] md:w-[70px] mb-[-7px] invert"
           />
         </div>
         <p className="mt-6 max-w-2xl text-lg md:text-xl text-gray-300">
@@ -55,7 +55,7 @@ const HomePage = () => {
           </div>
           <div className="space-y-4 flex flex-col items-center text-center max-w-xs">
             <img
-              src="/dollar.gif"
+              src="/coin.gif"
               alt="Financial support"
               className="bg-slate-400 rounded-full w-[82px] md:w-[90px]"
             />

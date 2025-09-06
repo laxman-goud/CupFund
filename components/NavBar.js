@@ -30,7 +30,7 @@ const Navbar = () => {
           <img
             src="/tea.gif"
             alt="Chai cup"
-            className="w-10 md:w-12 "
+            className="w-10 md:w-12 invert"
           />
           <span className="hidden sm:block">CupFund</span>
         </Link>
