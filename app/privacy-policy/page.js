@@ -29,7 +29,7 @@ const PrivacyPolicy = () => {
           <strong>Data Security:</strong> We use industry-standard encryption to protect your personal data and payment information.
         </p>
         <p className="text-gray-200 mb-6">
-          <strong>Your Rights:</strong> You have the right to access, update, and delete your personal information. To exercise these rights, please contact us at <a href="mailto:support@getmeachai.com" className="text-blue-500 hover:underline">support@getmeachai.com</a>.
+          <strong>Your Rights:</strong> You have the right to access, update, and delete your personal information. To exercise these rights, please contact us at <a href="mailto:support@getmeachai.com" className="text-blue-500 hover:underline">support@getmeachai</a>.
         </p>
         <p className="text-gray-200">
           For more details, please read our full <a href="#" className="text-blue-500 hover:underline">Privacy Policy</a>.
