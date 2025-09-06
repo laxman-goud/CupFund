@@ -8,7 +8,7 @@ const HomePage = () => {
       <section className="flex flex-col justify-center items-center h-[100dvh] text-center px-6 md:px-0 bg-gradient-to-b from-gray-900 to-gray-950 text-white">
         <div className="font-bold text-4xl md:text-6xl flex items-end justify-center gap-2">
           <span className="bg-gradient-to-b from-white to-gray-400 bg-clip-text text-transparent">
-            Get Me A Chai
+            CupFund
           </span>
           <img
             src="/tea.gif"
@@ -39,7 +39,7 @@ const HomePage = () => {
       {/* Features Section */}
       <section className="text-white container mx-auto py-20 px-6">
         <h2 className="text-3xl text-center font-bold mb-14">
-          Your fans can buy you a chai ☕
+          Your fans can buy you a cup of chai ☕
         </h2>
         <div className="flex flex-wrap justify-center gap-10">
           <div className="space-y-4 flex flex-col items-center text-center max-w-xs">
@@ -91,7 +91,7 @@ const HomePage = () => {
           <div className="flex justify-center">
             <img
               src="about-left.jpg"
-              alt="About Get Me A Chai"
+              alt="About CupFund"
               className="rounded-xl shadow-lg w-full h-auto object-cover max-h-[400px]"
             />
           </div>
@@ -99,7 +99,7 @@ const HomePage = () => {
           {/* Right: Content */}
           <div className="space-y-6">
             <p className="text-gray-300 text-lg leading-relaxed">
-              At <span className="font-semibold">Get Me A Chai</span>, we empower
+              At <span className="font-semibold">CupFund</span>, we empower
               creators, developers, and influencers by connecting them with their
               supporters. Our platform enables you to fund your projects and ideas,
               providing a space where creativity and innovation thrive.

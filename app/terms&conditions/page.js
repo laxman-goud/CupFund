@@ -33,7 +33,7 @@ const TermsAndConditions = () => {
         {/* Terms Content */}
         <section className="space-y-8 text-gray-300 leading-relaxed">
           <p>
-            Welcome to <span className="font-semibold">Get Me A Chai</span>. By
+            Welcome to <span className="font-semibold">CupFund</span>. By
             using our website, you agree to comply with and be bound by the
             following terms and conditions:
           </p>
@@ -60,7 +60,7 @@ const TermsAndConditions = () => {
 
           <p>
             <strong>Intellectual Property:</strong> All content on this site is
-            the property of Get Me A Chai or its content suppliers and is
+            the property of CupFund or its content suppliers and is
             protected by intellectual property laws.
           </p>
 

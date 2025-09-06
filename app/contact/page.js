@@ -38,10 +38,10 @@ const ContactUs = () => {
             <span>
               <strong>Email:</strong>{" "}
               <a
-                href="mailto:support@getmeachai.com"
+                href="mailto:support@CupFund.com"
                 className="text-blue-400 hover:underline"
               >
-                support@getmeachai
+                support@CupFund
               </a>
             </span>
             <span>

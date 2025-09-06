@@ -18,7 +18,7 @@ export default Username;
 
 export async function generateMetadata({ params }) {
   const user = JSON.parse(await fetchUser(params.username));
-  const userTitle = user.username ? `Support ${user.username} | Get Me A Chai` : "User Not Found | Get Me A Chai"
+  const userTitle = user.username ? `Support ${user.username} | CupFund` : "User Not Found | CupFund"
 
   return {
     title: userTitle,

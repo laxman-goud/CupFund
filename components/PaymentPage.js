@@ -69,7 +69,7 @@ const PaymentPage = ({ username }) => {
       key: currentUser.razorpayid,
       amount: amount, // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
       currency: "INR",
-      name: "Get Me A Chai", //your business name
+      name: "CupFund", //your business name
       description: "Support Creator",
       image: "/tea.gif",
       order_id: orderId, //This is a sample Order ID. Pass the `id` obtained in the response of Step 1

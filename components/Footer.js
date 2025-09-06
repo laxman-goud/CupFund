@@ -10,12 +10,12 @@ const Footer = () => {
         
         {/* Left Section - Branding */}
         <div className="flex flex-col items-center md:items-start gap-3 text-center md:text-left">
-          <h2 className="text-lg font-semibold text-white">☕ Get Me A Chai</h2>
+          <h2 className="text-lg font-semibold text-white">☕ CupFund</h2>
           <p className="text-sm text-gray-400">
             Support your favorite creators, one chai at a time!
           </p>
           <p className="text-xs text-gray-500">
-            © {currentYear} Get Me A Chai. All rights reserved.
+            © {currentYear} CupFund. All rights reserved.
           </p>
           <p className="text-xs text-gray-500">Made with ❤️ by Laxman</p>
         </div>

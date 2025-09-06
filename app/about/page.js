@@ -16,7 +16,7 @@ const About = () => {
         <section className="px-6 md:px-16 py-14 max-w-5xl mx-auto space-y-12 text-center leading-relaxed">
           <div className="bg-neutral-900 p-8 rounded-xl border border-neutral-800 shadow hover:shadow-lg transition">
             <p className="text-gray-300 text-lg">
-          At <span className="font-semibold">Get Me A Chai</span>, we are
+          At <span className="font-semibold">CupFund</span>, we are
           committed to fostering a vibrant community where developers,
           creators, and influencers can thrive. Our crowdfunding platform
           connects talented individuals with supporters who believe in their
@@ -28,7 +28,7 @@ const About = () => {
           Our mission is to empower developers, content creators, artists, and
           influencers by providing them with the resources they need to succeed.
           Whether you're building apps, making videos, creating art, or sharing
-          your story, <span className="font-semibold">Get Me A Chai</span> is
+          your story, <span className="font-semibold">CupFund</span> is
           here to support you every step of the way.
             </p>
           </div>
@@ -48,7 +48,7 @@ const About = () => {
       {/* Features Section */}
       <section className="px-6 md:px-12 py-14 text-center">
         <h2 className="text-3xl md:text-4xl font-bold mb-6">
-          Why Choose Get Me A Chai?
+          Why Choose CupFund?
         </h2>
         <p className="text-gray-400 max-w-2xl mx-auto mb-12">
           We make it simple for creators to receive support, and for fans to
@@ -100,5 +100,5 @@ const About = () => {
 export default About;
 
 export const metadata = {
-  title: "About | Get Me A Chai",
+  title: "About | CupFund",
 };

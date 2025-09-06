@@ -272,7 +272,7 @@ const Dashboard = () => {
                                     className="flex justify-between items-center bg-slate-700/60 p-4 rounded-lg mb-2"
                                 >
                                     <div className="flex flex-col">
-                                        <span className="font-bold">{p.name} bought you a chai!</span>
+                                        <span className="font-bold">{p.name} bought you a cup of chai!</span>
                                         <span className="text-sm text-slate-300">
                                             &quot;{p.message}&quot;
                                         </span>

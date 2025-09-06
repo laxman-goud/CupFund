@@ -32,7 +32,7 @@ const Navbar = () => {
             alt="Chai cup"
             className="w-10 md:w-12 "
           />
-          <span className="hidden sm:block">GetMeAChai</span>
+          <span className="hidden sm:block">CupFund</span>
         </Link>
 
         {/* Right Section */}

@@ -35,7 +35,7 @@ const CancellationRefundPolicies = () => {
         {/* Policy Content */}
         <section className="space-y-8 text-gray-300 leading-relaxed">
           <p>
-            At <span className="font-semibold">Get Me A Chai</span>, we strive
+            At <span className="font-semibold">CupFund</span>, we strive
             to ensure the satisfaction of all our users. Please review our
             cancellation and refund policies below:
           </p>
@@ -53,10 +53,10 @@ const CancellationRefundPolicies = () => {
                 In the event of a fraudulent campaign, please contact us
                 immediately at{" "}
                 <a
-                  href="mailto:support@getmeachai"
+                  href="mailto:support@CupFund"
                   className="text-blue-400 hover:underline"
                 >
-                  support@getmeachai
+                  support@CupFund
                 </a>{" "}
                 for assistance.
               </li>
@@ -92,10 +92,10 @@ const CancellationRefundPolicies = () => {
             If you have any questions or need further assistance, please reach
             out to us at{" "}
             <a
-              href="mailto:support@getmeachai"
+              href="mailto:support@CupFund"
               className="text-blue-400 hover:underline"
             >
-              support@getmeachai
+              support@CupFund
             </a>
             .
           </p>
