@@ -1,41 +1,59 @@
-import React from 'react';
-import Link from 'next/link';
-import { PiGithubLogoBold } from "react-icons/pi";
-import { ImLinkedin2 } from "react-icons/im";
+import React from "react";
+import Link from "next/link";
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
-  return (
-    <footer className='bg-gray-950 text-white flex flex-col md:flex-row justify-between items-center py-6 px-4 md:px-10 gap-6'>
-      <div className='flex flex-col items-center md:items-start gap-2 md:gap-6'>
-        <div className='flex flex-col items-center md:items-start gap-2'>
-          <div className='text-sm md:text-base'>Copyright &copy; {currentYear} Get Me A Chai | All rights reserved!</div>
-          <div className='text-xs md:text-sm text-gray-500'>Made by Laxman</div>
-        </div>
-        <div className='flex flex-col md:flex-row gap-3 md:gap-5 text-center'>
-          <Link href='/about' className='text-sm md:text-base hover:underline transition-colors'>About Us</Link>
-          <Link href='/contact' className='text-sm md:text-base hover:underline transition-colors'>Contact Us</Link>
-          <Link href='/privacy-policy' className='text-sm md:text-base hover:underline transition-colors'>Privacy Policy</Link>
-          <Link href='/terms&conditions' className='text-sm md:text-base hover:underline transition-colors'>Terms & Conditions</Link>
-          <Link href='/cancellation&refund' className='text-sm md:text-base hover:underline transition-colors'>Cancellation/Refund Policies</Link>
-        </div>
-      </div>
 
-      <div className='flex flex-col items-center gap-3'>
-        <div className='text-sm md:text-base'>Follow me on</div>
-        <div className='flex gap-4 items-center'>
-          <a href="https://github.com/laxman-goud" target='_blank' rel="noopener noreferrer" className='border border-zinc-400 py-2 px-3 rounded-full hover:bg-gray-800 transition-colors flex items-center gap-2'>
-            <PiGithubLogoBold className='w-5 h-5'/>
-            <span className='hidden md:inline'>GitHub</span>
-          </a>
-          <a href="https://linkedin.com/in/laxman-goud" target='_blank' rel="noopener noreferrer" className='border border-zinc-400 py-2 px-3 rounded-full hover:bg-gray-800 transition-colors flex items-center gap-2'>
-            <ImLinkedin2 className='w-5 h-5'/>
-            <span className='hidden md:inline'>LinkedIn</span>
-          </a>
+  return (
+    <footer className="bg-gray-950 text-gray-300 border-t border-gray-800">
+      <div className="max-w-7xl mx-auto px-6 md:px-12 py-10 grid grid-cols-1 md:grid-cols-2 gap-8">
+        
+        {/* Left Section - Branding */}
+        <div className="flex flex-col items-center md:items-start gap-3 text-center md:text-left">
+          <h2 className="text-lg font-semibold text-white">☕ Get Me A Chai</h2>
+          <p className="text-sm text-gray-400">
+            Support your favorite creators, one chai at a time!
+          </p>
+          <p className="text-xs text-gray-500">
+            © {currentYear} Get Me A Chai. All rights reserved.
+          </p>
+          <p className="text-xs text-gray-500">Made with ❤️ by Laxman</p>
+        </div>
+
+        {/* Right Section - Quick Links */}
+        <div className="flex flex-col items-center md:items-end text-center md:text-right">
+          <h3 className="text-sm font-semibold text-white mb-3">Quick Links</h3>
+          <ul className="flex flex-col gap-2 text-sm">
+            <li>
+              <Link href="/about" className="hover:text-white transition">
+                About Us
+              </Link>
+            </li>
+            <li>
+              <Link href="/contact" className="hover:text-white transition">
+                Contact Us
+              </Link>
+            </li>
+            <li>
+              <Link href="/privacy-policy" className="hover:text-white transition">
+                Privacy Policy
+              </Link>
+            </li>
+            <li>
+              <Link href="/terms&conditions" className="hover:text-white transition">
+                Terms & Conditions
+              </Link>
+            </li>
+            <li>
+              <Link href="/cancellation&refund" className="hover:text-white transition">
+                Cancellation & Refund
+              </Link>
+            </li>
+          </ul>
         </div>
       </div>
     </footer>
   );
-}
+};
 
 export default Footer;

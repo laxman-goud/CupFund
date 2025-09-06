@@ -4,57 +4,54 @@ import Link from "next/link";
 const HomePage = () => {
   return (
     <>
-      <div className="flex flex-col justify-center items-center h-[100dvh] gap-10">
-        <div className="font-bold text-4xl md:text-6xl flex items-end justify-center gap-0">
-          <span className="bg-gradient-to-b from-white to-gray-400 bg-clip-text font-bold text-transparent">
-            Get Me A Chai{" "}
+      {/* Hero Section */}
+      <section className="flex flex-col justify-center items-center h-[100dvh] text-center px-6 md:px-0 bg-gradient-to-b from-gray-900 to-gray-950 text-white">
+        <div className="font-bold text-4xl md:text-6xl flex items-end justify-center gap-2">
+          <span className="bg-gradient-to-b from-white to-gray-400 bg-clip-text text-transparent">
+            Get Me A Chai
           </span>
-          <span>
-            <img
-              src="/tea.gif"
-              alt="Chai cup"
-              className="bg-blend-luminosity w-[62px] md:w-[70px] mb-[-7px]"
-            />
-          </span>
+          <img
+            src="/tea.gif"
+            alt="Chai cup"
+            className="w-[62px] md:w-[70px] mb-[-7px]"
+          />
         </div>
-        <p className="px-5 text-center text-lg font-bold">
-          A crowdfunding platform for creators. Get funded by your fans and followers. Start your creative journey now!
+        <p className="mt-6 max-w-2xl text-lg md:text-xl text-gray-300">
+          A crowdfunding platform for creators. Get funded by your fans and
+          followers. Start your creative journey today!
         </p>
-        <div className="flex gap-4 justify-center">
+        <div className="flex gap-4 mt-8">
           <Link href="/login" passHref legacyBehavior>
-            <button
-              type="button"
-              className="text-white bg-gradient-to-br from-green-400 to-blue-600 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-green-200 dark:focus:ring-green-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2"
-            >
+            <button className="px-6 py-3 rounded-lg bg-gradient-to-r from-green-400 to-blue-600 hover:from-green-500 hover:to-blue-700 transition font-medium text-white text-sm md:text-base">
               Start Here
             </button>
           </Link>
           <Link href="/about" passHref legacyBehavior>
-            <button
-              type="button"
-              className="text-white bg-gradient-to-br from-green-400 to-blue-600 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-green-200 dark:focus:ring-green-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2"
-            >
+            <button className="px-6 py-3 rounded-lg bg-gradient-to-r from-purple-500 to-pink-600 hover:from-purple-600 hover:to-pink-700 transition font-medium text-white text-sm md:text-base">
               Read More
             </button>
           </Link>
         </div>
-      </div>
+      </section>
 
-      <div className="bg-white h-1 opacity-10" />
+      <div className="bg-white h-[1px] opacity-10" />
 
-      <div className="text-white container mx-auto py-14 px-10 md:px-0">
-        <h2 className="text-2xl text-center font-bold mb-14">
-          Your fans can buy you a chai
+      {/* Features Section */}
+      <section className="text-white container mx-auto py-20 px-6">
+        <h2 className="text-3xl text-center font-bold mb-14">
+          Your fans can buy you a chai ☕
         </h2>
-        <div className="flex gap-5 justify-around flex-wrap">
+        <div className="flex flex-wrap justify-center gap-10">
           <div className="space-y-4 flex flex-col items-center text-center max-w-xs">
             <img
               src="/man.gif"
               alt="Creator working"
               className="bg-slate-400 rounded-full w-[82px] md:w-[90px]"
             />
-            <p className="font-bold">Fund Your Passion</p>
-            <p>Let your fans support your creative journey and help you grow.</p>
+            <h3 className="font-bold text-lg">Fund Your Passion</h3>
+            <p className="text-gray-300">
+              Let your fans support your creative journey and help you grow.
+            </p>
           </div>
           <div className="space-y-4 flex flex-col items-center text-center max-w-xs">
             <img
@@ -62,8 +59,10 @@ const HomePage = () => {
               alt="Financial support"
               className="bg-slate-400 rounded-full w-[82px] md:w-[90px]"
             />
-            <p className="font-bold">Receive Support</p>
-            <p>Get direct contributions from your audience for your projects.</p>
+            <h3 className="font-bold text-lg">Receive Support</h3>
+            <p className="text-gray-300">
+              Get direct contributions from your audience for your projects.
+            </p>
           </div>
           <div className="space-y-4 flex flex-col items-center text-center max-w-xs">
             <img
@@ -71,30 +70,67 @@ const HomePage = () => {
               alt="Community"
               className="bg-slate-400 rounded-full w-[82px] md:w-[90px]"
             />
-            <p className="font-bold">Build Your Community</p>
-            <p>Connect with fans who believe in your work and want to help.</p>
+            <h3 className="font-bold text-lg">Build Your Community</h3>
+            <p className="text-gray-300">
+              Connect with fans who believe in your work and want to help.
+            </p>
           </div>
         </div>
-      </div>
+      </section>
 
-      <div className="bg-white h-1 opacity-10" />
+      <div className="bg-white h-[1px] opacity-10" />
 
-      <div className="text-white container py-14 mx-auto">
-        <h2 className="text-2xl text-center font-bold mb-14">
+      {/* About Section */}
+      <section className="text-white container mx-auto py-20 px-6">
+        <h2 className="text-3xl text-center font-bold mb-14">
           Learn More About Us
         </h2>
-        <div className="px-1 md:px-5 mt-20">
-          <p className="p-4 text-gray-200 text-md text-center font-sans">
-            At Get Me A Chai, we empower creators, developers, and influencers by connecting them with their supporters. Our platform enables you to fund your projects and ideas, providing a space where creativity and innovation thrive.
-          </p>
-          <p className="p-4 text-gray-200 text-md text-center font-sans">
-            Our mission is to help talented individuals focus on what they do best – creating. Whether you're coding the next big app, making engaging videos, or sharing your passion, Get Me A Chai is here to help you achieve your goals.
-          </p>
-          <p className="p-4 text-gray-200 text-md text-center font-sans">
-            We believe in the power of community and collective support. By providing a platform for patrons to contribute, we aim to transform dreams into reality and foster a culture of creativity and innovation.
-          </p>
+
+        <div className="grid md:grid-cols-2 gap-12 items-center">
+          {/* Left: Image */}
+          <div className="flex justify-center">
+            <img
+              src="about-left.jpg"
+              alt="About Get Me A Chai"
+              className="rounded-xl shadow-lg w-full h-auto object-cover max-h-[400px]"
+            />
+          </div>
+
+          {/* Right: Content */}
+          <div className="space-y-6">
+            <p className="text-gray-300 text-lg leading-relaxed">
+              At <span className="font-semibold">Get Me A Chai</span>, we empower
+              creators, developers, and influencers by connecting them with their
+              supporters. Our platform enables you to fund your projects and ideas,
+              providing a space where creativity and innovation thrive.
+            </p>
+
+            {/* Highlights with Icons */}
+            <div className="space-y-4">
+              <div className="flex items-start gap-3">
+                <span className="bg-green-500 p-2 rounded-full">✅</span>
+                <p className="text-gray-300">
+                  Focus on your passion while we help you build your community.
+                </p>
+              </div>
+              <div className="flex items-start gap-3">
+                <span className="bg-blue-500 p-2 rounded-full">🚀</span>
+                <p className="text-gray-300">
+                  Launch creative ideas with the support of your fans & followers.
+                </p>
+              </div>
+              <div className="flex items-start gap-3">
+                <span className="bg-purple-500 p-2 rounded-full">🤝</span>
+                <p className="text-gray-300">
+                  Transform dreams into reality through collective support.
+                </p>
+              </div>
+            </div>
+          </div>
         </div>
-      </div>
+      </section>
+
+
     </>
   );
 };
