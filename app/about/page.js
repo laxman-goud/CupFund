@@ -1,48 +1,47 @@
-// "use client"
 import React from "react";
 
 const About = () => {
   return (
     <div className="bg-black text-white">
-        {/* Hero Section */}
-        <section className="px-6 py-20 text-center bg-gradient-to-b from-gray-900 via-black to-black">
-          <h1 className="text-4xl md:text-5xl font-extrabold mb-4">About Us</h1>
-          <p className="text-lg md:text-xl text-gray-300 italic">
-            &quot;Fueling Creativity, One Cup at a Time&quot;
+      {/* Hero Section */}
+      <section className="px-6 py-20 text-center bg-gradient-to-b from-gray-900 via-black to-black">
+        <h1 className="text-4xl md:text-5xl font-extrabold mb-4">About Us</h1>
+        <p className="text-lg md:text-xl text-gray-300 italic">
+          &quot;Fueling Creativity, One Cup at a Time&quot;
+        </p>
+      </section>
+
+      {/* Story Section */}
+      <section className="px-6 md:px-16 py-14 max-w-5xl mx-auto space-y-12 text-center leading-relaxed">
+        <div className="bg-neutral-900 p-8 rounded-xl border border-neutral-800 shadow hover:shadow-lg transition">
+          <p className="text-gray-300 text-lg">
+            At <span className="font-semibold">CupFund</span>, we are
+            committed to fostering a vibrant community where developers,
+            creators, and influencers can thrive. Our crowdfunding platform
+            connects talented individuals with supporters who believe in their
+            vision and want to help bring their projects to life.
           </p>
-        </section>
+        </div>
+        <div className="bg-neutral-900 p-8 rounded-xl border border-neutral-800 shadow hover:shadow-lg transition">
+          <p className="text-gray-300 text-lg">
+            Our mission is to empower developers, content creators, artists, and
+            influencers by providing them with the resources they need to succeed.
+            Whether you&apos;re building apps, making videos, creating art, or sharing
+            your story, <span className="font-semibold">CupFund</span> is
+            here to support you every step of the way.
+          </p>
+        </div>
+        <div className="bg-neutral-900 p-8 rounded-xl border border-neutral-800 shadow hover:shadow-lg transition">
+          <p className="text-gray-300 text-lg">
+            We believe in the transformative power of community support. Our
+            platform is more than just crowdfunding – it&apos;s a space where{" "}
+            <span className="font-semibold">dreams become reality</span> and ideas
+            flourish.
+          </p>
+        </div>
+      </section>
 
-        {/* Story Section */}
-        <section className="px-6 md:px-16 py-14 max-w-5xl mx-auto space-y-12 text-center leading-relaxed">
-          <div className="bg-neutral-900 p-8 rounded-xl border border-neutral-800 shadow hover:shadow-lg transition">
-            <p className="text-gray-300 text-lg">
-          At <span className="font-semibold">CupFund</span>, we are
-          committed to fostering a vibrant community where developers,
-          creators, and influencers can thrive. Our crowdfunding platform
-          connects talented individuals with supporters who believe in their
-          vision and want to help bring their projects to life.
-            </p>
-          </div>
-          <div className="bg-neutral-900 p-8 rounded-xl border border-neutral-800 shadow hover:shadow-lg transition">
-            <p className="text-gray-300 text-lg">
-          Our mission is to empower developers, content creators, artists, and
-          influencers by providing them with the resources they need to succeed.
-          Whether you're building apps, making videos, creating art, or sharing
-          your story, <span className="font-semibold">CupFund</span> is
-          here to support you every step of the way.
-            </p>
-          </div>
-          <div className="bg-neutral-900 p-8 rounded-xl border border-neutral-800 shadow hover:shadow-lg transition">
-            <p className="text-gray-300 text-lg">
-          We believe in the transformative power of community support. Our
-          platform is more than just crowdfunding – it's a space where{" "}
-          <span className="font-semibold">dreams become reality</span> and ideas
-          flourish.
-            </p>
-          </div>
-        </section>
-
-        {/* Divider */}
+      {/* Divider */}
       <div className="bg-white h-1 opacity-10 my-12"></div>
 
       {/* Features Section */}

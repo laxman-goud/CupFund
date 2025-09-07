@@ -1,11 +1,11 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { fetchUser, updateProfile } from "@/action/useractions";
 import { ToastContainer, toast, Bounce } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import Loader from "@/components/Loader"; // Ensure Loader is imported
+import Loader from "@/components/Loader";
 
 const Dashboard = () => {
     const { data: session, status, update } = useSession();
@@ -22,16 +22,20 @@ const Dashboard = () => {
     const [payments, setPayments] = useState([]);
     const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
-        if (status === "unauthenticated") {
-            router.push("/login");
+    const fetchPayments = useCallback(async () => {
+        if (session && session.user?.name) {
+            try {
+                const res = await fetch(`/api/payments?username=${session.user.name}`);
+                const data = await res.json();
+                setPayments(data.payments);
+            } catch (error) {
+                console.error("Error fetching payments:", error);
+                toast.error("Failed to fetch payments.");
+            }
         }
-        if (session) {
-            getData();
-        }
-    }, [session, status, router]);
+    }, [session]);
 
-    const getData = async () => {
+    const getData = useCallback(async () => {
         setLoading(true);
         if (session && session.user?.name) {
             const data = await fetchUser(session.user.name);
@@ -56,20 +60,16 @@ const Dashboard = () => {
             }
         }
         setLoading(false);
-    };
+    }, [session, form, fetchPayments]);
 
-    const fetchPayments = async () => {
-        if (session && session.user?.name) {
-            try {
-                const res = await fetch(`/api/payments?username=${session.user.name}`);
-                const data = await res.json();
-                setPayments(data.payments);
-            } catch (error) {
-                console.error("Error fetching payments:", error);
-                toast.error("Failed to fetch payments.");
-            }
+    useEffect(() => {
+        if (status === "unauthenticated") {
+            router.push("/login");
         }
-    };
+        if (session) {
+            getData();
+        }
+    }, [session, status, router, getData]);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -99,7 +99,6 @@ const Dashboard = () => {
                 theme: "dark",
                 transition: Bounce,
             });
-            // Await the session update to get the new username
             await update();
         } else {
             toast.error(result.message, {
@@ -133,10 +132,7 @@ const Dashboard = () => {
                 >
                     {/* Name */}
                     <div className="mb-1">
-                        <label
-                            htmlFor="name"
-                            className="block mb-2 text-sm font-medium text-white"
-                        >
+                        <label htmlFor="name" className="block mb-2 text-sm font-medium text-white">
                             Name
                         </label>
                         <input
@@ -150,10 +146,7 @@ const Dashboard = () => {
                     </div>
                     {/* Email */}
                     <div className="mb-1">
-                        <label
-                            htmlFor="email"
-                            className="block mb-2 text-sm font-medium text-white"
-                        >
+                        <label htmlFor="email" className="block mb-2 text-sm font-medium text-white">
                             Email
                         </label>
                         <input
@@ -168,10 +161,7 @@ const Dashboard = () => {
                     </div>
                     {/* Username */}
                     <div className="mb-1">
-                        <label
-                            htmlFor="username"
-                            className="block mb-2 text-sm font-medium text-white"
-                        >
+                        <label htmlFor="username" className="block mb-2 text-sm font-medium text-white">
                             Username
                         </label>
                         <input
@@ -185,10 +175,7 @@ const Dashboard = () => {
                     </div>
                     {/* Profile Picture */}
                     <div className="mb-1">
-                        <label
-                            htmlFor="profilpicture"
-                            className="block mb-2 text-sm font-medium text-white"
-                        >
+                        <label htmlFor="profilpicture" className="block mb-2 text-sm font-medium text-white">
                             Profile Picture
                         </label>
                         <input
@@ -202,10 +189,7 @@ const Dashboard = () => {
                     </div>
                     {/* Cover Image */}
                     <div className="mb-1">
-                        <label
-                            htmlFor="coverpicture"
-                            className="block mb-2 text-sm font-medium text-white"
-                        >
+                        <label htmlFor="coverpicture" className="block mb-2 text-sm font-medium text-white">
                             Cover Picture
                         </label>
                         <input
@@ -219,10 +203,7 @@ const Dashboard = () => {
                     </div>
                     {/* Razorpay Id */}
                     <div className="mb-1">
-                        <label
-                            htmlFor="razorpayid"
-                            className="block mb-2 text-sm font-medium text-white"
-                        >
+                        <label htmlFor="razorpayid" className="block mb-2 text-sm font-medium text-white">
                             Razorpay Id
                         </label>
                         <input
@@ -236,10 +217,7 @@ const Dashboard = () => {
                     </div>
                     {/* Razorpay Secret */}
                     <div className="mb-5">
-                        <label
-                            htmlFor="razorpaySecret"
-                            className="block mb-2 text-sm font-medium text-white"
-                        >
+                        <label htmlFor="razorpaySecret" className="block mb-2 text-sm font-medium text-white">
                             Razorpay Secret
                         </label>
                         <input
@@ -277,9 +255,7 @@ const Dashboard = () => {
                                             &quot;{p.message}&quot;
                                         </span>
                                     </div>
-                                    <span className="text-lg font-bold">
-                                        ₹{p.amount / 100}
-                                    </span>
+                                    <span className="text-lg font-bold">₹{p.amount / 100}</span>
                                 </li>
                             ))}
                         </ul>

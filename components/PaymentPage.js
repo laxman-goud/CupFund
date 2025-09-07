@@ -1,6 +1,6 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import Script from "next/script";
 import { initiate, fetchUser, fetchPayments } from "@/action/useractions";
 import { useSession } from "next-auth/react";
@@ -8,8 +8,7 @@ import Loader from "./Loader";
 import CoverpicSkeleteon from "./CoverpicSkeleteon";
 import { ToastContainer, toast, Bounce } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { useSearchParams } from "next/navigation";
-import { useRouter } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 
 const PaymentPage = ({ username }) => {
   const { data: session } = useSession();
@@ -20,9 +19,22 @@ const PaymentPage = ({ username }) => {
   const searchParams = useSearchParams();
   const router = useRouter();
 
+  // ✅ Wrapped in useCallback to avoid ESLint warning
+  const getData = useCallback(async () => {
+    setLoading(true);
+    const u = await fetchUser(username);
+    const userData = JSON.parse(u);
+    setCurrentUser(userData);
+
+    const paymentData = await fetchPayments(username);
+    setPayments(JSON.parse(paymentData));
+
+    setLoading(false);
+  }, [username]);
+
   useEffect(() => {
     getData();
-  }, []);
+  }, [getData]); // ✅ added dependency
 
   useEffect(() => {
     if (searchParams.get("paymentdone") === "true") {
@@ -45,40 +57,28 @@ const PaymentPage = ({ username }) => {
     setPaymentform({ ...paymentform, [e.target.name]: e.target.value });
   };
 
-  const getData = async () => {
-    setLoading(true);
-    const u = await fetchUser(username);
-    const userData = JSON.parse(u);
-    setCurrentUser(userData);
-    const paymentData = await fetchPayments(username);
-    setPayments(JSON.parse(paymentData));
-    setLoading(false);
-  };
-
   const pay = async (amount) => {
-    // get the order id
     let a = await initiate(amount, username, paymentform);
-    
+
     if (a.success === false) {
       toast.error(a.error);
       return;
     }
-    
+
     let orderId = a.id;
     var options = {
       key: currentUser.razorpayid,
-      amount: amount, // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
+      amount: amount,
       currency: "INR",
-      name: "CupFund", //your business name
+      name: "CupFund",
       description: "Support Creator",
       image: "/tea.gif",
-      order_id: orderId, //This is a sample Order ID. Pass the `id` obtained in the response of Step 1
+      order_id: orderId,
       callback_url: `${process.env.NEXT_PUBLIC_URL}/api/razorpay`,
       prefill: {
-        //We recommend using the prefill parameter to auto-fill customer's contact information especially their phone number
-        name: paymentform.name, //your customer's name
+        name: paymentform.name,
         email: session?.user?.email,
-        contact: "9999999999", //your customer's phone number
+        contact: "9999999999",
       },
       notes: {
         address: "Razorpay Corporate Office",
@@ -90,35 +90,24 @@ const PaymentPage = ({ username }) => {
     var rzp1 = new window.Razorpay(options);
     rzp1.open();
   };
-  
+
   const handleSupportButton = () => {
     pay(paymentform.amount * 100);
   };
-  
 
   return (
     <>
       <Script src="https://checkout.razorpay.com/v1/checkout.js"></Script>
 
-      <ToastContainer
-        position="top-right"
-        autoClose={5000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-        theme="dark"
-        transition={Bounce}
-      />
+      <ToastContainer position="top-right" autoClose={5000} hideProgressBar={false} theme="dark" transition={Bounce} />
+
       {loading && <Loader />}
       {currentUser.error && (
         <div className="text-center text-4xl my-20 font-extrabold text-white">
           User {username} not found ☹
         </div>
       )}
+
       {!currentUser.error && (
         <>
           <div className="bg-cover relative w-full">
@@ -133,24 +122,19 @@ const PaymentPage = ({ username }) => {
               <CoverpicSkeleteon />
             )}
 
-            <div className=" size-20 md:size-32 object-center absolute mx-auto right-0 left-0 -bottom-12 md:-bottom-16 border-2 overflow-hidden border-white rounded-full bg-black">
+            <div className="size-20 md:size-32 object-center absolute mx-auto right-0 left-0 -bottom-12 md:-bottom-16 border-2 overflow-hidden border-white rounded-full bg-black">
               <img
-                className="object-cover size-20 md:size-32 "
-                src={
-                  currentUser.profilePicture
-                    ? currentUser.profilePicture
-                    : "/avatar.gif"
-                }
+                className="object-cover size-20 md:size-32"
+                src={currentUser.profilePicture ? currentUser.profilePicture : "/avatar.gif"}
                 alt="avatarImage"
                 onError={(e) => (e.target.src = "/avatar.gif")}
               />
             </div>
           </div>
+
           <div className="info flex items-center justify-center py-20 flex-col gap-2 text-white">
             <div className="font-bold text-lg">@{username}</div>
-            <div className="text-slate-300">
-              let&apos;s Help {username} to get a cup of tea
-            </div>
+            <div className="text-slate-300">let&apos;s Help {username} to get a cup of tea</div>
             <div className="text-slate-400">
               {payments.length} supporters . ₹{payments.reduce((a, b) => a + b.amount, 0) / 100} raised
             </div>
@@ -160,18 +144,15 @@ const PaymentPage = ({ username }) => {
                 <h2 className="text-xl font-bold mb-5">Supporters</h2>
 
                 {payments.length === 0 && (
-                  <div className="text-center font-extrabold text-lg">
-                    No supporters yet ☹
-                  </div>
+                  <div className="text-center font-extrabold text-lg">No supporters yet ☹</div>
                 )}
                 <ul className="mx-2.5 md:mx-5 text-md">
                   {payments.map((p) => (
                     <li key={p._id} className="my-4 flex gap-2 items-center">
                       <img src="/avatar.gif" alt="user avatar" width={28} />
                       <span className="text-sm md:text-base">
-                        {p.name} donated{" "}
-                        <span className="font-semibold">₹{p.amount / 100}</span> with
-                        a message &quot;{p.message}&quot;
+                        {p.name} donated <span className="font-semibold">₹{p.amount / 100}</span> with a message &quot;
+                        {p.message}&quot;
                       </span>
                     </li>
                   ))}
@@ -209,15 +190,14 @@ const PaymentPage = ({ username }) => {
                   />
                   <button
                     type="button"
-                    className=" text-white bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 shadow-lg shadow-blue-500/50 dark:shadow-md dark:shadow-blue-800/80 font-medium rounded-lg text-sm px-5 py-2.5 text-center mb-2 disabled:from-gray-500 disabled:shadow-gray-800/80 disabled:hover:bg-gradient-to-r"
-                    disabled={
-                      paymentform.name?.length < 3 || paymentform.amount?.length < 1
-                    }
+                    className="text-white bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 font-medium rounded-lg text-sm px-5 py-2.5 text-center mb-2 disabled:from-gray-500 disabled:hover:bg-gradient-to-r"
+                    disabled={paymentform.name?.length < 3 || paymentform.amount?.length < 1}
                     onClick={handleSupportButton}
                   >
                     Support
                   </button>
                 </form>
+
                 <div className="flex gap-3 mt-5">
                   <button
                     className="p-2 bg-slate-600/40 rounded-md hover:bg-slate-700/90 disabled:bg-slate-800/40"
@@ -235,7 +215,7 @@ const PaymentPage = ({ username }) => {
                   </button>
                   <button
                     className="p-2 bg-slate-600/40 rounded-md hover:bg-slate-700/90 disabled:bg-slate-800/40"
-                    onClick={() => pay(30 * 100)}
+                    onClick={() => pay(50 * 100)}
                     disabled={paymentform.name?.length < 3}
                   >
                     Pay ₹50
