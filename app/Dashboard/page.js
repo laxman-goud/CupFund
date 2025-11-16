@@ -8,8 +8,11 @@ import "react-toastify/dist/ReactToastify.css";
 import Loader from "@/components/Loader";
 
 const Dashboard = () => {
+    // Get session + user state from NextAuth
     const { data: session, status, update } = useSession();
     const router = useRouter();
+
+    // Local form state
     const [form, setForm] = useState({
         name: "",
         email: "",
@@ -19,11 +22,19 @@ const Dashboard = () => {
         razorpayid: "",
         razorpaySecret: "",
     });
+
+    // Payment history of the creator
     const [payments, setPayments] = useState([]);
+
+    // Loading state
     const [loading, setLoading] = useState(true);
 
+    /**
+     * Fetch user's payments from API
+     * Runs only when session exists
+     */
     const fetchPayments = useCallback(async () => {
-        if (session && session.user?.name) {
+        if (session?.user?.name) {
             try {
                 const res = await fetch(`/api/payments?username=${session.user.name}`);
                 const data = await res.json();
@@ -35,18 +46,23 @@ const Dashboard = () => {
         }
     }, [session]);
 
+    /**
+     * Fetch user profile details
+     * Combines user data + payment data
+     */
     const getData = useCallback(async () => {
         setLoading(true);
-        if (session && session.user?.name) {
+
+        if (session?.user?.name) {
             const data = await fetchUser(session.user.name);
             const userData = JSON.parse(data);
+
+            // If backend throws error
             if (userData.error) {
                 toast.error(userData.error);
-                setForm({
-                    ...form,
-                    email: session.user.email,
-                });
+                setForm((prev) => ({ ...prev, email: session.user.email }));
             } else {
+                // Set user profile data into form
                 setForm({
                     name: userData.name || "",
                     email: userData.email || "",
@@ -56,23 +72,31 @@ const Dashboard = () => {
                     razorpayid: userData.razorpayid || "",
                     razorpaySecret: userData.razorpaySecret || "",
                 });
+
+                // Load payments list
                 await fetchPayments();
             }
         }
-        setLoading(false);
-    }, [session, form, fetchPayments]);
 
+        setLoading(false);
+    }, [session, fetchPayments]);
+
+    /**
+     * Redirect unauthenticated users to login page.
+     * Fetch dashboard data when session loads.
+     */
     useEffect(() => {
-        if (status === "unauthenticated") {
-            router.push("/login");
-        }
-        if (session) {
-            getData();
-        }
+        if (status === "unauthenticated") router.push("/login");
+        if (session) getData();
     }, [session, status, router, getData]);
 
+    /**
+     * Handle input changes
+     * Auto-slugify username field
+     */
     const handleChange = (e) => {
         const { name, value } = e.target;
+
         if (name === "username") {
             const slugName = value.replace(/[^\w-]+/g, "").toLowerCase();
             setForm({ ...form, username: slugName });
@@ -81,51 +105,41 @@ const Dashboard = () => {
         }
     };
 
+    /**
+     * Update profile on submit
+     */
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
+
         const response = await updateProfile(form, session.user.name);
         const result = JSON.parse(response);
+
         setLoading(false);
+
+        // Show toast according to result
         if (result.success) {
-            toast.success(result.message, {
-                position: "top-right",
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                theme: "dark",
-                transition: Bounce,
-            });
-            await update();
+            toast.success(result.message, { transition: Bounce });
+            await update(); // Refresh session
         } else {
-            toast.error(result.message, {
-                position: "top-right",
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                theme: "dark",
-                transition: Bounce,
-            });
+            toast.error(result.message, { transition: Bounce });
         }
     };
 
-    if (status === "loading" || loading) {
-        return <Loader />;
-    }
+    // Show loader when session or data is loading
+    if (status === "loading" || loading) return <Loader />;
 
     return (
         <>
             <ToastContainer />
+
             <div className="dashboard-page min-h-screen">
+                {/* Dashboard Heading */}
                 <h2 className="text-2xl font-bold text-center py-5">
                     Welcome to your dashboard
                 </h2>
+
+                {/* Profile Form */}
                 <form
                     className="max-w-sm md:max-w-lg mx-auto pb-5 px-3 md:px-0"
                     onSubmit={handleSubmit}
@@ -137,28 +151,29 @@ const Dashboard = () => {
                         </label>
                         <input
                             type="text"
-                            value={form.name || ""}
+                            value={form.name}
                             onChange={handleChange}
                             name="name"
                             id="name"
-                            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full px-2.5 py-1 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                            className="input-style"
                         />
                     </div>
-                    {/* Email */}
+
+                    {/* Read-only email */}
                     <div className="mb-1">
                         <label htmlFor="email" className="block mb-2 text-sm font-medium text-white">
                             Email
                         </label>
                         <input
                             type="email"
-                            value={form.email || ""}
+                            value={form.email}
                             name="email"
                             id="email"
-                            className="bg-gray-50 border border-gray-300 dark:border-gray-600 text-gray-900/70 text-sm rounded-lg block w-full px-2.5 py-1 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white/70 focus-visible:outline-none cursor-not-allowed"
+                            className="input-style cursor-not-allowed"
                             readOnly
-                            title="Email can't be modified"
                         />
                     </div>
+
                     {/* Username */}
                     <div className="mb-1">
                         <label htmlFor="username" className="block mb-2 text-sm font-medium text-white">
@@ -166,55 +181,59 @@ const Dashboard = () => {
                         </label>
                         <input
                             type="text"
-                            value={form.username || ""}
+                            value={form.username}
                             onChange={handleChange}
                             name="username"
                             id="username"
-                            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full px-2.5 py-1 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                            className="input-style"
                         />
                     </div>
-                    {/* Profile Picture */}
+
+                    {/* Profile Picture URL */}
                     <div className="mb-1">
                         <label htmlFor="profilpicture" className="block mb-2 text-sm font-medium text-white">
                             Profile Picture
                         </label>
                         <input
                             type="url"
-                            value={form.profilpicture || ""}
+                            value={form.profilpicture}
                             onChange={handleChange}
                             name="profilpicture"
                             id="profilpicture"
-                            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full px-2.5 py-1 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                            className="input-style"
                         />
                     </div>
-                    {/* Cover Image */}
+
+                    {/* Cover Image URL */}
                     <div className="mb-1">
                         <label htmlFor="coverpicture" className="block mb-2 text-sm font-medium text-white">
                             Cover Picture
                         </label>
                         <input
                             type="url"
-                            value={form.coverpicture || ""}
+                            value={form.coverpicture}
                             onChange={handleChange}
                             name="coverpicture"
                             id="coverpicture"
-                            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full px-2.5 py-1 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                            className="input-style"
                         />
                     </div>
-                    {/* Razorpay Id */}
+
+                    {/* Razorpay ID */}
                     <div className="mb-1">
                         <label htmlFor="razorpayid" className="block mb-2 text-sm font-medium text-white">
                             Razorpay Id
                         </label>
                         <input
                             type="text"
-                            value={form.razorpayid || ""}
+                            value={form.razorpayid}
                             onChange={handleChange}
                             name="razorpayid"
                             id="razorpayid"
-                            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full px-2.5 py-1 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                            className="input-style"
                         />
                     </div>
+
                     {/* Razorpay Secret */}
                     <div className="mb-5">
                         <label htmlFor="razorpaySecret" className="block mb-2 text-sm font-medium text-white">
@@ -222,24 +241,26 @@ const Dashboard = () => {
                         </label>
                         <input
                             type="text"
-                            value={form.razorpaySecret || ""}
+                            value={form.razorpaySecret}
                             onChange={handleChange}
                             name="razorpaySecret"
                             id="razorpaySecret"
-                            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full px-2.5 py-1 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                            className="input-style"
                         />
                     </div>
-                    {/* Save button */}
+
                     <button
                         type="submit"
-                        className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+                        className="btn-primary w-full"
                     >
                         Save
                     </button>
                 </form>
 
+                {/* Recent Payments */}
                 <div className="recent-payments my-8 p-4 bg-slate-800/40 rounded-lg w-full max-w-2xl mx-auto">
                     <h2 className="text-2xl font-bold mb-4">Your Recent Payments</h2>
+
                     {payments.length === 0 ? (
                         <p className="text-slate-400 text-center">No payments received yet.</p>
                     ) : (
@@ -252,7 +273,7 @@ const Dashboard = () => {
                                     <div className="flex flex-col">
                                         <span className="font-bold">{p.name} bought you a cup of chai!</span>
                                         <span className="text-sm text-slate-300">
-                                            &quot;{p.message}&quot;
+                                            "{p.message}"
                                         </span>
                                     </div>
                                     <span className="text-lg font-bold">₹{p.amount / 100}</span>
@@ -261,6 +282,7 @@ const Dashboard = () => {
                         </ul>
                     )}
                 </div>
+
             </div>
         </>
     );
