@@ -1,20 +1,22 @@
-import React from 'react'
-import DashBoard from '@/components/DashBoard'
-import Loader from '@/components/Loader'
-import { Suspense } from 'react'
+import React from 'react';
+import DashBoard from '@/components/DashBoard';
+import Loader from '@/components/Loader';
+import { Suspense } from 'react';
 
 const Profile = () => {
   return (
     <>
-      <Suspense fallback={<Loader />} >
-        <DashBoard />
+      {/* Suspense ensures dashboard loads smoothly with a loader */}
+      <Suspense fallback={<Loader />}>
+        <DashBoard />    {/* Dashboard component containing user settings */}
       </Suspense>
     </>
-  )
-}
+  );
+};
 
-export default Profile
+export default Profile;
 
+// Metadata for SEO and browser tab title
 export const metadata = {
-  title : "Profile | CupFund"
-}
+  title: "Profile | CupFund",
+};
